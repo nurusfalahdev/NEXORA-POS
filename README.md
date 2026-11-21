@@ -1,3 +1,26 @@
+<div align="center">
+
+  <img src="frontend/public/logo.png" width="110" alt="Nexora POS Logo">
+
+  <h1>NEXORA POS</h1>
+
+  <p><strong>Manage Smarter. Sell Better.</strong></p>
+
+  <p>
+    A modern Point of Sale application for smarter
+    business and inventory management.
+  </p>
+
+  <a href="https://github.com/nurusfalahdev/NEXORA-POS">
+    <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github">
+  </a>
+  <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white">
+  <img src="https://img.shields.io/badge/Vue.js-3-42B883?style=for-the-badge&logo=vuedotjs&logoColor=white">
+
+</div>
+
+---
+
 # 🚀 Nexora POS
 
 **Manage Smarter. Sell Better.**
