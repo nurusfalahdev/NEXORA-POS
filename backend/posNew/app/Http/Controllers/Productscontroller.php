@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Products;
+use Illuminate\Http\Request;
+
+class Productscontroller extends Controller
+{
+    public function index()
+    {
+        $produk = Products::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data produk berhasil diambil',
+            'data' => $produk
+        ], 200);
+    }
+
+
+    public function store(Request $req)
+    {
+        $validated = $req->validate([
+            'kode' => 'required',
+            'nama' => 'required',
+            'ukuran' => 'required',
+            'harga' => 'required',
+            'satuan' => 'required',
+        ], [
+            'kode.required' => 'harap masukan kode',
+            'nama.required' => 'harap masukan nama',
+            'ukuran.required' => 'harap masukan ukuran',
+            'harga.required' => 'harap masukan harga',
+            'satuan.required' => 'harap masukan satuan',
+        ]);
+        Products::create($validated);
+        toast()->success('Data Baru Berhasil Di Tambahkan');
+        return redirect()->route('master-data.productsindex');
+    }
+
+
+    // public function update(Request $update, $id)
+    // {
+    //     $validated = $update->validate([
+    //         'kode' => 'required',
+    //         'nama' => 'required',
+    //         'ukuran' => 'required',
+    //         'harga' => 'required',
+    //         'satuan' => 'required',
+    //     ], [
+    //         'kode.required' => 'harap masukan kode',
+    //         'nama.required' => 'harap masukan nama',
+    //         'ukuran.required' => 'harap masukan ukuran',
+    //         'harga.required' => 'harap masukan harga',
+    //         'satuan.required' => 'harap masukan satuan',
+    //     ]);
+    //     $produk = Products::findOrFail($id);
+    //     $produk->update($validated);
+    //     toast()->success('Data Berhasil Di Edit');
+    //     return redirect()->route('master-data.productsindex');
+    // }
+
+
+
+    public function update(Request $req, $id)
+    {
+        $validated = $req->validate([
+            'kode' => 'required',
+            'nama' => 'required',
+            'ukuran' => 'required',
+            'Harga' => 'required',
+            'satuan' => 'required',
+        ]);
+
+        $produk = Products::findOrFail($id);
+
+        $produk->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data produk berhasil diperbarui',
+            'data' => $produk
+        ], 200);
+    }
+
+
+    public function destroy(string $id)
+    {
+        $produk = Products::find($id);
+        $produk->delete();
+        toast()->success('Data berhasil di hapus');
+        return redirect()->route('master-data.productsindex');
+    }
+}
