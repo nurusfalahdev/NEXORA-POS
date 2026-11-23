@@ -38,32 +38,38 @@
                                     <div class="input row grid grid-cols-2">
                                         <div class="kode col-md-6">
                                             <label for="kode">Kode</label>
-                                            <input type="text" name="kode" id="kode" class="form-control">
+                                            <input type="text" name="kode" id="kode" class="form-control"
+                                                v-model="tambah.kode">
                                         </div>
                                         <div class="nama col-md-6">
                                             <label for="nama">Nama</label>
-                                            <input type="text" name="nama" id="nama" class="form-control">
+                                            <input type="text" name="nama" id="nama" class="form-control"
+                                                v-model="tambah.nama">
                                         </div>
                                         <div class="ukuran col-md-6">
                                             <label for="ukuran">Ukuran</label>
-                                            <input type="text" name="ukuran" id="ukuran" class="form-control">
+                                            <input type="text" name="ukuran" id="ukuran" class="form-control"
+                                                v-model="tambah.ukuran">
                                         </div>
                                         <div class="harga col-md-6">
                                             <label for="harga">Harga</label>
-                                            <input type="text" name="harga" id="harga" class="form-control">
+                                            <input type="text" name="harga" id="harga" class="form-control"
+                                                v-model="tambah.Harga">
                                         </div>
                                     </div>
                                     <!-- satuan -->
                                     <div class="satuan">
                                         <label for="satuan">Satuan</label>
-                                        <input type="text" name="satuan" id="satuan" class="form-control" value="Pcs">
+                                        <input type="text" name="satuan" id="satuan" class="form-control" value="Pcs"
+                                            v-model="tambah.satuan">
                                     </div>
                                 </form>
                             </div>
                             <div class="dialog-footer">
                                 <button type="button" class="btn-solid theme-secondary"
                                     data-bs-dismiss="dialog">Close</button>
-                                <button type="button" class="btn-solid theme-primary">Save changes</button>
+                                <button type="button" class="btn-solid theme-primary" @click="addData">Save
+                                    changes</button>
                             </div>
                         </dialog>
                     </div>
@@ -204,6 +210,7 @@
 <script setup>
 
 import { ref, computed, onMounted, watch } from 'vue';
+import Swal from 'sweetalert2';
 
 const produk = ref([]);
 const currentPage = ref(1);
@@ -302,14 +309,94 @@ const saveEdit = async () => {
         console.log('Respons API:', hasil);
 
         if (!response.ok) {
-            throw new Error(hasil.message || 'Gagal mengubah produk');
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: 'Data Produk Gagal Edit.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Data Produk Berhasil Edit.',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
 
-        alert('data berhasil di perbaharui');
         await getproduk();
+
+        const modal = document.getElementById('editdialog');
+        if (modal.open) {
+            modal.close();
+        }
     } catch (error) {
         console.error(error);
-        alert(error.message);
+        Swal.fire(error.message);
+    }
+}
+
+
+const tambah = ref({
+    kode: '',
+    nama: '',
+    ukuran: '',
+    Harga: '',
+    satuan: ''
+})
+
+const addData = async () => {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/produk', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(tambah.value)
+        });
+        const hasil = await response.json();
+
+        if (!response.ok) {
+            console.log('Error validasi:', hasil.errors);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Gagal!',
+                text: Object.values(hasil.errors || {})
+                    .flat()
+                    .join('\n') || hasil.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'success!',
+                text: 'Data Produk Berhasil Di Add',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            tambah.value = {
+                kode: '',
+                nama: '',
+                ukuran: '',
+                Harga: '',
+                satuan: ''
+            };
+
+        }
+
+        const modal = document.getElementById('adddialog');
+        if (modal.open) {
+            modal.close();
+        }
+        await getproduk();
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message)
     }
 }
 

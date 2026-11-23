@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/produk', [Productscontroller::class, 'index']);
-
 // produk
-Route::put('/produk/{id}', [Productscontroller::class . 'update']);
+Route::get('/produk', [Productscontroller::class, 'index']);
+Route::post('/produk', [Productscontroller::class, 'store']);
+Route::put('/produk/{id}', [Productscontroller::class, 'update']);

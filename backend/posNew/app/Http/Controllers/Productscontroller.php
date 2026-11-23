@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class Productscontroller extends Controller
 {
@@ -19,24 +20,43 @@ class Productscontroller extends Controller
     }
 
 
+    // public function store(Request $req)
+    // {
+    //     $validated = $req->validate([
+    //         'kode' => 'required',
+    //         'nama' => 'required',
+    //         'ukuran' => 'required',
+    //         'harga' => 'required',
+    //         'satuan' => 'required',
+    //     ], [
+    //         'kode.required' => 'harap masukan kode',
+    //         'nama.required' => 'harap masukan nama',
+    //         'ukuran.required' => 'harap masukan ukuran',
+    //         'harga.required' => 'harap masukan harga',
+    //         'satuan.required' => 'harap masukan satuan',
+    //     ]);
+    //     Products::create($validated);
+    //     toast()->success('Data Baru Berhasil Di Tambahkan');
+    //     return redirect()->route('master-data.productsindex');
+    // }
+
     public function store(Request $req)
     {
         $validated = $req->validate([
             'kode' => 'required',
             'nama' => 'required',
             'ukuran' => 'required',
-            'harga' => 'required',
-            'satuan' => 'required',
-        ], [
-            'kode.required' => 'harap masukan kode',
-            'nama.required' => 'harap masukan nama',
-            'ukuran.required' => 'harap masukan ukuran',
-            'harga.required' => 'harap masukan harga',
-            'satuan.required' => 'harap masukan satuan',
+            'Harga' => 'required',
+            'satuan' => 'nullable'
         ]);
-        Products::create($validated);
-        toast()->success('Data Baru Berhasil Di Tambahkan');
-        return redirect()->route('master-data.productsindex');
+
+        $produk = Products::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'produk berhasil di tambahkan',
+            'data' => $produk
+        ], 201);
     }
 
 
