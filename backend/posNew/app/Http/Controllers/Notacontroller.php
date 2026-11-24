@@ -13,20 +13,27 @@ class Notacontroller extends Controller
 {
     public function index(Request $request)
     {
-        $customers = Customer::all();
-        $produks   = Products::all();
+        // $customers = Customer::all();
+        // $produks   = Products::all();
 
-        $produk = Nota::with('customer')->get();
+        // $produk = Nota::with('customer')->get();
 
-        $nomor = (new Nota)->nomor();
+        // $nomor = (new Nota)->nomor();
 
 
-        return view('invoice.index', compact(
-            'produk',
-            'customers',
-            'produks',
-            'nomor'
-        ));
+        // return view('invoice.index', compact(
+        //     'produk',
+        //     'customers',
+        //     'produks',
+        //     'nomor'
+        // ));
+
+        $nota = Nota::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'Data nota berhasil diambil',
+            'data' => $nota
+        ], 200);
     }
 
     public function store(Request $request)
@@ -36,21 +43,21 @@ class Notacontroller extends Controller
         try {
 
             $nota = Nota::create([
-                'no_nota'     => $request->no_nota,
-                'tanggal'     => $request->tanggal,
+                'no_nota' => $request->no_nota,
+                'tanggal' => $request->tanggal,
                 'customer_id' => $request->customer_id,
-                'keterangan'  => $request->keterangan,
-                'total'       => $request->total,
+                'keterangan' => $request->keterangan,
+                'total' => $request->total,
             ]);
 
             foreach ($request->items as $item) {
                 Nota_items::create([
-                    'nota_id'   => $nota->id,
+                    'nota_id' => $nota->id,
                     'product_id' => $item['product_id'],
-                    'kode'      => $item['kode'],
-                    'qty'       => $item['qty'],
-                    'harga'     => $item['harga'],
-                    'subtotal'  => $item['subtotal'],
+                    'kode' => $item['kode'],
+                    'qty' => $item['qty'],
+                    'harga' => $item['harga'],
+                    'subtotal' => $item['subtotal'],
                 ]);
             }
 
@@ -72,10 +79,10 @@ class Notacontroller extends Controller
         $nota = Nota::findOrFail($id);
 
         $nota->update([
-            'tanggal'     => $request->tanggal,
+            'tanggal' => $request->tanggal,
             'customer_id' => $request->customer_id,
-            'keterangan'  => $request->keterangan,
-            'total'       => $request->total,
+            'keterangan' => $request->keterangan,
+            'total' => $request->total,
         ]);
 
         $savedItemIds = [];
@@ -90,10 +97,10 @@ class Notacontroller extends Controller
 
                     $notaItem->update([
                         'product_id' => $item['product_id'],
-                        'kode'       => $item['kode'],
-                        'qty'        => $item['qty'],
-                        'harga'      => $item['harga'],
-                        'subtotal'   => $item['subtotal'],
+                        'kode' => $item['kode'],
+                        'qty' => $item['qty'],
+                        'harga' => $item['harga'],
+                        'subtotal' => $item['subtotal'],
                     ]);
 
                     $savedItemIds[] = $notaItem->id;
@@ -102,10 +109,10 @@ class Notacontroller extends Controller
 
                 $newItem = $nota->items()->create([
                     'product_id' => $item['product_id'],
-                    'kode'       => $item['kode'],
-                    'qty'        => $item['qty'],
-                    'harga'      => $item['harga'],
-                    'subtotal'   => $item['subtotal'],
+                    'kode' => $item['kode'],
+                    'qty' => $item['qty'],
+                    'harga' => $item['harga'],
+                    'subtotal' => $item['subtotal'],
                 ]);
 
                 $savedItemIds[] = $newItem->id;
@@ -121,7 +128,7 @@ class Notacontroller extends Controller
             ->route('invoice.index');
     }
 
-    public function destroy(String $id)
+    public function destroy(string $id)
     {
         $nota = Nota::findOrFail($id);
         $nota->items()->delete();

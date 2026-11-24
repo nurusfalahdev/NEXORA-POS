@@ -116,6 +116,8 @@
                             <div class="dialog-footer">
                                 <button type="button" class="btn-solid theme-secondary"
                                     data-bs-dismiss="dialog">Close</button>
+                                <button type="button" class="btn-solid theme-danger"
+                                    data-bs-dismiss="dialog">Delete</button>
                                 <button type="button" class="btn-solid theme-primary" @click="saveEdit">Save
                                     changes</button>
                             </div>

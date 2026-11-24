@@ -18,11 +18,11 @@ const router = createRouter({
       name: "produk",
       component: () => import("@/views/produkview.vue"),
     },
-    // {
-    //   path: "/kirim",
-    //   name: "kirim",
-    //   component: () => import("@/views/kirimview.vue"),
-    // },
+    {
+      path: "/kirim",
+      name: "kirim",
+      component: () => import("@/views/kirimview.vue"),
+    },
     // {
     //   path: "/terjual",
     //   name: "terjual",

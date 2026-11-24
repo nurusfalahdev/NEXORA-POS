@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Notacontroller;
 use App\Http\Controllers\Productscontroller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,3 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/produk', [Productscontroller::class, 'index']);
 Route::post('/produk', [Productscontroller::class, 'store']);
 Route::put('/produk/{id}', [Productscontroller::class, 'update']);
+
+
+// kirim
+Route::get('/kirim', [Notacontroller::class, 'index']);
