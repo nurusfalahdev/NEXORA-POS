@@ -36,17 +36,20 @@
                                 <th scope="col">Customer/toko</th>
                                 <th scope="col">Jenis</th>
                                 <th scope="col">Keterangan</th>
+                                <th scope="col">Total</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>1</td>
+                            <tr v-for="(data,index) in nota" :key="data.id">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ data.no_nota }}</td>
+                                <td>{{ data.tanggal }}</td>
+                                <td>{{ data.customer }}</td>
+                                <td>{{ data.jenis }}</td>
+                                <td>{{ data.keterangan }}</td>
+                                <td>{{ data.total }}</td>
+
                                 <td>
                                     <button class="btn-solid theme-success">Show</button>
                                 </td>
@@ -73,7 +76,10 @@ const getnota = async () => {
         nota.value = hasil.data;
     } catch (error) {
         console.error(error.message);
-
     }
+
+    onMounted(() => {
+        getnota();
+    });
 }
 </script>

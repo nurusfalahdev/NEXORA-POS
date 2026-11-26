@@ -107,9 +107,19 @@ class Productscontroller extends Controller
 
     public function destroy(string $id)
     {
-        $produk = Products::find($id);
+        $produk = Products::findOrFail($id);
+
+        if (!$produk) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'produk tidak di temukan'
+            ], 404);
+        }
+
         $produk->delete();
-        toast()->success('Data berhasil di hapus');
-        return redirect()->route('master-data.productsindex');
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil dihapus'
+        ], 200);
     }
 }

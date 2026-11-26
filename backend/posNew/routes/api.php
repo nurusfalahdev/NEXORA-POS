@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/produk', [Productscontroller::class, 'index']);
 Route::post('/produk', [Productscontroller::class, 'store']);
 Route::put('/produk/{id}', [Productscontroller::class, 'update']);
+Route::delete('/produk/{id}', [ProductsController::class, 'destroy']);
 
 
 // kirim

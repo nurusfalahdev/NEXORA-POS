@@ -264,7 +264,7 @@ const getproduk = async () => {
 
         if (!response.ok) {
             throw new Error('Gagal mengambil data');
-        }
+        }   
 
         const hasil = await response.json();
         produk.value = hasil.data;
@@ -402,5 +402,26 @@ const addData = async () => {
     }
 }
 
+
+const destroyData = async (id) => {
+    try {
+        const konfirmasi = await Swal.fire({
+            title: 'Hapus Produk?',
+            text: 'Data produk yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        });
+
+        if(!konfirmasi.isConfirmed) {
+            return;
+        }
+    } catch (error) {
+
+    }
+}
 
 </script>
