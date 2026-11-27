@@ -69,7 +69,7 @@ Nexora-POS/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/USERNAME/Nexora-POS.git
+git clone https://github.com/nurusfalahdev/NEXORA-POS.git
 cd Nexora-POS
 ```
 
