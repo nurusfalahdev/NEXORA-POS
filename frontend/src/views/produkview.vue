@@ -17,9 +17,16 @@
                             <i class="bi bi-plus-circle-fill"></i>
                             Add Data
                         </button>
-                        <button class="btn-solid theme-warning">
+                        <!-- import -->
+                        <label for="fileExcel" class="btn-solid theme-warning">
                             <i class="bi bi-file-earmark-excel"></i>
                             Import Excel
+                        </label>
+                        <input type="file" id="fileExcel" accept=".xlsx,.xls,.csv" hidden @change="importExcel" />
+                        <!-- export -->
+                        <button type="button" class="btn-solid theme-secondary" @click="exportExcel">
+                            <i class="bi bi-file-earmark-arrow-down"></i>
+                            Export Excel
                         </button>
                     </div>
                 </div>
@@ -116,16 +123,20 @@
                             <div class="dialog-footer">
                                 <button type="button" class="btn-solid theme-secondary"
                                     data-bs-dismiss="dialog">Close</button>
-                                <button type="button" class="btn-solid theme-danger"
-                                    data-bs-dismiss="dialog">Delete</button>
-                                <button type="button" class="btn-solid theme-primary" @click="saveEdit">Save
-                                    changes</button>
+                                <button type="button" class="btn-solid theme-danger" @click="destroyData(dataEdit.id)">
+                                    <i class="bi bi-trash-fill"></i>
+                                    Delete
+                                </button>
+                                <button type="button" class="btn-solid theme-primary" @click="saveEdit">
+                                    <i class="bi bi-pencil-square"></i>
+                                    Edit
+                                </button>
                             </div>
                         </dialog>
                     </div>
                 </div>
 
-                <table class="table table-striped text-center table-hover">
+                <table class="mt-5 table table-striped table-hover">
                     <thead>
                         <tr>
                             <th scope="col">Nomor</th>
@@ -264,7 +275,7 @@ const getproduk = async () => {
 
         if (!response.ok) {
             throw new Error('Gagal mengambil data');
-        }   
+        }
 
         const hasil = await response.json();
         produk.value = hasil.data;
@@ -395,7 +406,6 @@ const addData = async () => {
             modal.close();
         }
         await getproduk();
-
     } catch (error) {
         console.error(error);
         alert(error.message)
@@ -405,6 +415,12 @@ const addData = async () => {
 
 const destroyData = async (id) => {
     try {
+        // Tutup modal Edit
+        const modal = document.getElementById('editdialog');
+
+        if (modal.open) {
+            modal.close();
+        }
         const konfirmasi = await Swal.fire({
             title: 'Hapus Produk?',
             text: 'Data produk yang dihapus tidak dapat dikembalikan!',
@@ -416,12 +432,151 @@ const destroyData = async (id) => {
             cancelButtonText: 'Batal'
         });
 
-        if(!konfirmasi.isConfirmed) {
+        if (!konfirmasi.isConfirmed) {
             return;
         }
-    } catch (error) {
+        //  req ke backend
+        const response = await fetch(`http://127.0.0.1:8000/api/produk/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
+        const hasil = await response.json();
+
+        if (!response.ok) {
+            throw new Error(hasil.message || "gagal menghapus produk");
+        }
+
+
+        // Notifikasi berhasil
+        await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Produk berhasil dihapus.',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        await getproduk();
+        // Jika halaman sekarang kosong, kembali ke halaman sebelumnya
+        if (dataPagination.value.length === 0 && currentPage.value > 1) {
+            currentPage.value--;
+        }
+    } catch (error) {
+        console.error(error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: error.message
+        });
     }
 }
+
+
+const importExcel = async (event) => {
+    // Ambil file yang dipilih
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    try {
+        // Masukkan file ke FormData
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Kirim ke Laravel
+        const response = await fetch(
+            'http://127.0.0.1:8000/api/produk/import',
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            }
+        );
+
+        const hasil = await response.json();
+
+        if (!response.ok) {
+            throw new Error(hasil.message || 'Import gagal!');
+        }
+
+        // Ambil ulang data produk
+        await getproduk();
+
+        // Notifikasi berhasil
+        await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: hasil.message
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: error.message
+        });
+
+    } finally {
+        // Reset input file
+        event.target.value = '';
+    }
+};
+
+
+
+const exportExcel = async () => {
+    try {
+        const response = await fetch(
+            'http://127.0.0.1:8000/api/produk/export',
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Gagal mengunduh data produk!');
+        }
+
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'data_produk_nexora.xlsx';
+
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Data produk berhasil diexport.'
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: error.message
+        });
+    }
+};
 
 </script>

@@ -18,3 +18,9 @@ Route::delete('/produk/{id}', [ProductsController::class, 'destroy']);
 
 // kirim
 Route::get('/kirim', [Notacontroller::class, 'index']);
+
+// excel import
+Route::post('/produk/import', [Productscontroller::class, 'importExcel']);
+
+// export excel
+Route::get('/produk/export', [Productscontroller::class, 'exportExcel']);

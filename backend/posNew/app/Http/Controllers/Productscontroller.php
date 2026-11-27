@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Symfony\Contracts\Service\Attribute\Required;
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Productscontroller extends Controller
 {
@@ -18,27 +21,6 @@ class Productscontroller extends Controller
             'data' => $produk
         ], 200);
     }
-
-
-    // public function store(Request $req)
-    // {
-    //     $validated = $req->validate([
-    //         'kode' => 'required',
-    //         'nama' => 'required',
-    //         'ukuran' => 'required',
-    //         'harga' => 'required',
-    //         'satuan' => 'required',
-    //     ], [
-    //         'kode.required' => 'harap masukan kode',
-    //         'nama.required' => 'harap masukan nama',
-    //         'ukuran.required' => 'harap masukan ukuran',
-    //         'harga.required' => 'harap masukan harga',
-    //         'satuan.required' => 'harap masukan satuan',
-    //     ]);
-    //     Products::create($validated);
-    //     toast()->success('Data Baru Berhasil Di Tambahkan');
-    //     return redirect()->route('master-data.productsindex');
-    // }
 
     public function store(Request $req)
     {
@@ -58,30 +40,6 @@ class Productscontroller extends Controller
             'data' => $produk
         ], 201);
     }
-
-
-    // public function update(Request $update, $id)
-    // {
-    //     $validated = $update->validate([
-    //         'kode' => 'required',
-    //         'nama' => 'required',
-    //         'ukuran' => 'required',
-    //         'harga' => 'required',
-    //         'satuan' => 'required',
-    //     ], [
-    //         'kode.required' => 'harap masukan kode',
-    //         'nama.required' => 'harap masukan nama',
-    //         'ukuran.required' => 'harap masukan ukuran',
-    //         'harga.required' => 'harap masukan harga',
-    //         'satuan.required' => 'harap masukan satuan',
-    //     ]);
-    //     $produk = Products::findOrFail($id);
-    //     $produk->update($validated);
-    //     toast()->success('Data Berhasil Di Edit');
-    //     return redirect()->route('master-data.productsindex');
-    // }
-
-
 
     public function update(Request $req, $id)
     {
@@ -121,5 +79,33 @@ class Productscontroller extends Controller
             'success' => true,
             'message' => 'Produk berhasil dihapus'
         ], 200);
+    }
+
+
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240'
+        ]);
+
+        Excel::import(
+            new ProductsImport,
+            $request->file('file')
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data produk berhasil diimport!'
+        ], 200);
+    }
+
+
+    public function exportExcel()
+    {
+        return Excel::download(
+            new ProductsExport,
+            'data_produk_nexora.xlsx'
+        );
     }
 }
